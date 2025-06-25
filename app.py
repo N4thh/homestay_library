@@ -4,7 +4,7 @@ from utils import format_price
 import json
 from PIL import Image
 from database import init_db
-from models import HomestayJSONManager, User
+from models import HomestayJSONManager, User, db
 from auth import UserLogin
 import base64
 from datetime import timedelta
@@ -12,6 +12,15 @@ from extensions import init_extensions, login_manager
 from config import config, is_vercel
 import logging
 from logging.handlers import RotatingFileHandler
+from flask_login import LoginManager
+from flask_caching import Cache
+from flask_limiter import Limiter
+from flask_compress import Compress
+
+login_manager = LoginManager()
+cache = Cache()
+limiter = Limiter(key_func=lambda: 'global')
+compress = Compress()
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -55,10 +64,7 @@ def create_app(config_name='default'):
     
     @login_manager.user_loader
     def load_user(user_id):
-        user_data = User.get_by_phone(user_id)
-        if user_data:
-            return UserLogin(user_data)
-        return None
+        return User.query.get(int(user_id))
     
     # Add custom filters to Jinja
     app.jinja_env.filters['format_price'] = format_price

@@ -38,9 +38,8 @@ class Config:
     SEND_FILE_MAX_AGE_DEFAULT = timedelta(days=7)
     
     # Database settings
-    DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
-    MAX_CONNECTIONS = 10
-    POOL_TIMEOUT = 30
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Image settings
     MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -59,6 +58,11 @@ class Config:
     # Logging
     LOG_LEVEL = 'INFO'
     LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+    CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+    CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
     
     @staticmethod
     def init_app(app):
