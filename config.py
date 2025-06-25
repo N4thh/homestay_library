@@ -1,6 +1,9 @@
 import os
 from datetime import timedelta
 
+def is_vercel():
+    return os.environ.get('VERCEL', '0') == '1'
+
 class Config:
     # Flask settings
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your-generated-key')
@@ -60,11 +63,12 @@ class Config:
     @staticmethod
     def init_app(app):
         """Initialize application with configuration"""
-        # Create necessary directories
-        os.makedirs('static/images', exist_ok=True)
-        os.makedirs('data', exist_ok=True)
-        os.makedirs('cache', exist_ok=True)
-        os.makedirs('logs', exist_ok=True)
+        # Create necessary directories only if not on Vercel
+        if not is_vercel():
+            os.makedirs('static/images', exist_ok=True)
+            os.makedirs('data', exist_ok=True)
+            os.makedirs('cache', exist_ok=True)
+            os.makedirs('logs', exist_ok=True)
 
 class DevelopmentConfig(Config):
     DEBUG = True
