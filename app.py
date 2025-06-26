@@ -9,7 +9,7 @@ from auth import UserLogin
 import base64
 from datetime import timedelta
 from extensions import init_extensions, login_manager
-from config import config, is_vercel
+from config import config
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -24,7 +24,7 @@ def create_app(config_name='default'):
     init_extensions(app)
     
     # Configure logging
-    if not app.debug and not is_vercel():
+    if not app.debug:
         if not os.path.exists('logs'):
             os.mkdir('logs')
         file_handler = RotatingFileHandler('logs/homestay.log', maxBytes=10240, backupCount=10)
@@ -35,11 +35,6 @@ def create_app(config_name='default'):
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
         app.logger.info('Homestay startup')
-    else:
-        # Log ra stdout/stderr trên Vercel
-        logging.basicConfig(level=logging.INFO)
-        app.logger.setLevel(logging.INFO)
-        app.logger.info('Homestay startup (stdout)')
     
     # Add cache headers to static files
     @app.after_request
@@ -77,9 +72,6 @@ def create_app(config_name='default'):
     return app
 
 def init_homestay_data():
-    from config import is_vercel
-    if is_vercel():
-        return  # Không tạo/ghi file trên Vercel
     # Create a default image if it doesn't exist
     default_img_path = os.path.join('static', 'images', 'default.jpg')
     if not os.path.exists(default_img_path):

@@ -4,7 +4,6 @@ import os
 from contextlib import contextmanager
 from queue import Queue
 import threading
-from config import is_vercel
 
 # Connection pool settings
 MAX_CONNECTIONS = 10
@@ -60,15 +59,10 @@ class DatabasePool:
             conn = self.pool.get()
             conn.close()
 
-if not is_vercel():
-    # Initialize database pool
-    db_pool = DatabasePool()
-else:
-    db_pool = None
+# Initialize database pool
+db_pool = DatabasePool()
 
 def init_db():
-    if is_vercel():
-        raise RuntimeError('Database is not supported on Vercel. Please use a cloud database!')
     """Initialize the database with required tables"""
     with db_pool.get_connection() as conn:
         cursor = conn.cursor()

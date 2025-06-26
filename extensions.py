@@ -3,7 +3,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_compress import Compress
 from flask_login import LoginManager
-from config import is_vercel
 
 # Initialize extensions
 cache = Cache()
@@ -14,20 +13,15 @@ login_manager = LoginManager()
 def init_extensions(app):
     """Initialize all Flask extensions"""
     # Configure Flask-Caching
-    if is_vercel():
-        cache.init_app(app, config={
-            'CACHE_TYPE': 'simple',
-        })
-    else:
-        cache.init_app(app, config={
-            'CACHE_TYPE': 'filesystem',
-            'CACHE_DIR': 'cache',
-            'CACHE_DEFAULT_TIMEOUT': 300,
-            'CACHE_THRESHOLD': 1000,
-            'CACHE_OPTIONS': {
-                'mode': 0o600,
-            }
-        })
+    cache.init_app(app, config={
+        'CACHE_TYPE': 'filesystem',
+        'CACHE_DIR': 'cache',
+        'CACHE_DEFAULT_TIMEOUT': 300,
+        'CACHE_THRESHOLD': 1000,
+        'CACHE_OPTIONS': {
+            'mode': 0o600,
+        }
+    })
 
     # Configure rate limiter
     limiter.init_app(app)
