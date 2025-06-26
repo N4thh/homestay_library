@@ -16,7 +16,7 @@ from logging.handlers import RotatingFileHandler
 TMP_DIR = '/tmp'
 
 def create_app(config_name='default'):
-    app = Flask(__name__, static_folder='static')
+    app = Flask(__name__, static_folder='static', static_url_path='/static')
     
     # Load configuration
     app.config.from_object(config[config_name])
@@ -49,6 +49,17 @@ def create_app(config_name='default'):
             else:
                 response.headers['Cache-Control'] = 'public, max-age=3600'  # 1 hour
         return response
+    
+    # Custom static file handler with fallback
+    @app.route('/static/<path:filename>')
+    def custom_static(filename):
+        try:
+            return send_from_directory(app.static_folder, filename)
+        except FileNotFoundError:
+            # Fallback to default image for missing images
+            if filename.startswith('images/') and not filename.endswith('default.jpg'):
+                return send_from_directory(app.static_folder, 'images/default.jpg')
+            return send_from_directory(app.static_folder, filename), 404
     
     @login_manager.user_loader
     def load_user(user_id):
