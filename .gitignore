@@ -44,3 +44,4 @@ database.db
 .env.*
 *.env
 
+.vercel
