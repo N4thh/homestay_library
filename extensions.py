@@ -3,6 +3,9 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_compress import Compress
 from flask_login import LoginManager
+import os
+
+TMP_DIR = '/tmp'
 
 # Initialize extensions
 cache = Cache()
@@ -15,7 +18,7 @@ def init_extensions(app):
     # Configure Flask-Caching
     cache.init_app(app, config={
         'CACHE_TYPE': 'filesystem',
-        'CACHE_DIR': 'cache',
+        'CACHE_DIR': os.path.join(TMP_DIR, 'cache'),
         'CACHE_DEFAULT_TIMEOUT': 300,
         'CACHE_THRESHOLD': 1000,
         'CACHE_OPTIONS': {

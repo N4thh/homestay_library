@@ -13,8 +13,10 @@ from config import config
 import logging
 from logging.handlers import RotatingFileHandler
 
+TMP_DIR = '/tmp'
+
 def create_app(config_name='default'):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='static')
     
     # Load configuration
     app.config.from_object(config[config_name])
@@ -24,10 +26,10 @@ def create_app(config_name='default'):
     init_extensions(app)
     
     # Configure logging
+    log_dir = os.path.join(TMP_DIR, 'logs')
+    os.makedirs(log_dir, exist_ok=True)
     if not app.debug:
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
-        file_handler = RotatingFileHandler('logs/homestay.log', maxBytes=10240, backupCount=10)
+        file_handler = RotatingFileHandler(os.path.join(log_dir, 'homestay.log'), maxBytes=10240, backupCount=10)
         file_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
         ))
@@ -73,23 +75,16 @@ def create_app(config_name='default'):
 
 def init_homestay_data():
     # Create a default image if it doesn't exist
-    default_img_path = os.path.join('static', 'images', 'default.jpg')
+    static_img_dir = os.path.join(TMP_DIR, 'static', 'images')
+    os.makedirs(static_img_dir, exist_ok=True)
+    default_img_path = os.path.join(static_img_dir, 'default.jpg')
     if not os.path.exists(default_img_path):
-        # Create a simple colored image as default
         img = Image.new('RGB', (800, 600), color = (76, 175, 80)) 
         img.save(default_img_path, optimize=True, quality=85)
-    
-    # Create hero background if it doesn't exist
-    hero_bg_path = os.path.join('static', 'images', 'new_bg.jpg')
+    hero_bg_path = os.path.join(static_img_dir, 'new_bg.jpg')
     if not os.path.exists(hero_bg_path):
-        # Create a simple colored image for hero background
         hero_img = Image.new('RGB', (1920, 1080), color = (76, 175, 80))  
         hero_img.save(hero_bg_path, optimize=True, quality=85)
 
 # Create application instance
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-
-# Run the application
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)

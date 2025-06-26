@@ -1,6 +1,8 @@
 import os
 from datetime import timedelta
 
+TMP_DIR = '/tmp'
+
 class Config:
     # Flask settings
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your-generated-key')
@@ -8,7 +10,7 @@ class Config:
     
     # Cache settings
     CACHE_TYPE = 'filesystem'
-    CACHE_DIR = 'cache'
+    CACHE_DIR = os.path.join(TMP_DIR, 'cache')
     CACHE_DEFAULT_TIMEOUT = 300
     CACHE_THRESHOLD = 1000
     CACHE_OPTIONS = {
@@ -35,7 +37,7 @@ class Config:
     SEND_FILE_MAX_AGE_DEFAULT = timedelta(days=7)
     
     # Database settings
-    DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
+    DATABASE_URL = os.environ.get('DATABASE_URL', f'sqlite:///{TMP_DIR}/database.db')
     MAX_CONNECTIONS = 10
     POOL_TIMEOUT = 30
     
@@ -61,10 +63,10 @@ class Config:
     def init_app(app):
         """Initialize application with configuration"""
         # Create necessary directories
-        os.makedirs('static/images', exist_ok=True)
-        os.makedirs('data', exist_ok=True)
-        os.makedirs('cache', exist_ok=True)
-        os.makedirs('logs', exist_ok=True)
+        os.makedirs(os.path.join(TMP_DIR, 'static', 'images'), exist_ok=True)
+        os.makedirs(os.path.join(TMP_DIR, 'data'), exist_ok=True)
+        os.makedirs(os.path.join(TMP_DIR, 'cache'), exist_ok=True)
+        os.makedirs(os.path.join(TMP_DIR, 'logs'), exist_ok=True)
 
 class DevelopmentConfig(Config):
     DEBUG = True

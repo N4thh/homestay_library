@@ -9,6 +9,8 @@ import threading
 MAX_CONNECTIONS = 10
 POOL_TIMEOUT = 30  # seconds
 
+DB_PATH = '/tmp/database.db'
+
 class DatabasePool:
     _instance = None
     _lock = threading.Lock()
@@ -22,7 +24,7 @@ class DatabasePool:
     
     def _initialize(self):
         self.pool = Queue(maxsize=MAX_CONNECTIONS)
-        self.db_path = 'database.db'
+        self.db_path = DB_PATH
         
         # Create initial connections
         for _ in range(MAX_CONNECTIONS):
@@ -87,6 +89,3 @@ def get_db():
 def close_db():
     """Close all database connections"""
     db_pool.close_all()
-
-if __name__ == '__main__':
-    init_db()

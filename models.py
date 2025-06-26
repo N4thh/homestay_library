@@ -5,7 +5,9 @@ import ast
 from datetime import datetime, timedelta
 from functools import lru_cache
 import uuid
+import shutil
 
+TMP_DIR = '/tmp'
 
 class User:
     @staticmethod
@@ -48,20 +50,25 @@ class User:
                 return None
 
 class HomestayJSONManager:
-    JSON_FILE = 'data/homestays.json'
+    JSON_FILE = os.path.join(TMP_DIR, 'data', 'homestays.json')
+    SAMPLE_FILE = os.path.join('data', 'homestays.json')
     _cache = {}
     _cache_time = {}
     CACHE_DURATION = timedelta(minutes=5)
     
     def __init__(self):
-        self.data_file = os.path.join('data', 'homestays.json')
+        self.data_file = os.path.join(TMP_DIR, 'data', 'homestays.json')
         self._ensure_data_file_exists()
 
     def _ensure_data_file_exists(self):
         os.makedirs(os.path.dirname(self.data_file), exist_ok=True)
         if not os.path.exists(self.data_file):
-            with open(self.data_file, 'w', encoding='utf-8') as f:
-                json.dump([], f, ensure_ascii=False, indent=2)
+            # Nếu có file mẫu, copy sang /tmp
+            if os.path.exists(self.SAMPLE_FILE):
+                shutil.copyfile(self.SAMPLE_FILE, self.data_file)
+            else:
+                with open(self.data_file, 'w', encoding='utf-8') as f:
+                    json.dump([], f, ensure_ascii=False, indent=2)
 
     def read_homestays(self):
         now = datetime.now()
@@ -328,8 +335,8 @@ class Review:
 
 class ReviewJSONManager:
     def __init__(self):
-        self.data_file = os.path.join('data', 'reviews.json')
-        os.makedirs('data', exist_ok=True)
+        self.data_file = os.path.join(TMP_DIR, 'data', 'reviews.json')
+        os.makedirs(os.path.join(TMP_DIR, 'data'), exist_ok=True)
         if not os.path.exists(self.data_file):
             with open(self.data_file, 'w', encoding='utf-8') as f:
                 json.dump([], f)
