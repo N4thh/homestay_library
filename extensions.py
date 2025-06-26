@@ -15,10 +15,14 @@ login_manager = LoginManager()
 
 def init_extensions(app):
     """Initialize all Flask extensions"""
+    # Create cache directory if it doesn't exist
+    cache_dir = os.path.join(TMP_DIR, 'cache')
+    os.makedirs(cache_dir, exist_ok=True)
+    
     # Configure Flask-Caching
     cache.init_app(app, config={
         'CACHE_TYPE': 'filesystem',
-        'CACHE_DIR': os.path.join(TMP_DIR, 'cache'),
+        'CACHE_DIR': cache_dir,
         'CACHE_DEFAULT_TIMEOUT': 300,
         'CACHE_THRESHOLD': 1000,
         'CACHE_OPTIONS': {

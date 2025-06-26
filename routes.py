@@ -17,7 +17,6 @@ ITEMS_PER_PAGE = 12  # Number of items per page
 
 def register_routes(app):
     @app.route('/')
-    @login_required
     @limiter.limit("30/minute")
     @cache.cached(timeout=300)  # Cache for 5 minutes
     def index():
@@ -192,7 +191,6 @@ def register_routes(app):
         return redirect(url_for('homestay_detail', id=homestay_id))
 
     @app.route('/homestay/<id>', methods=['GET'])
-    @login_required
     @limiter.limit("30/minute")
     @cache.cached(timeout=300)  # Cache for 5 minutes
     def homestay_detail(id):
@@ -263,13 +261,11 @@ def register_routes(app):
 
     # Thêm route cho trang Giới thiệu
     @app.route('/about')
-    @login_required
     def about():
         return render_template('about.html')
     
     # Thêm route cho trang Liên hệ
     @app.route('/contact')
-    @login_required
     def contact():
         return render_template('contact.html')
 
@@ -331,7 +327,6 @@ def register_routes(app):
         return send_file(image_path, mimetype='image/jpeg')
 
     @app.route('/<name>', methods=['GET'])
-    @login_required
     def homestay_by_name(name):
         # Skip for index route
         if name == '':
