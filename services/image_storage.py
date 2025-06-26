@@ -1,6 +1,7 @@
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from typing import Optional, List
 import os
 
 class ImageStorageService:
@@ -12,7 +13,7 @@ class ImageStorageService:
             api_secret=os.getenv('CLOUDINARY_API_SECRET')
         )
 
-    def upload_image(self, file_path: str, folder: str = 'homestay') -> str:
+    def upload_image(self, file_path: str, folder: str = 'homestay') -> Optional[str]:
         """
         Upload an image to Cloudinary
         Returns the URL of the uploaded image
@@ -40,7 +41,7 @@ class ImageStorageService:
             print(f"Error deleting image: {e}")
             return False
 
-    def get_image_url(self, public_id: str) -> str:
+    def get_image_url(self, public_id: str) -> Optional[str]:
         """
         Get the URL of an image from its public_id
         """
