@@ -16,7 +16,7 @@ from logging.handlers import RotatingFileHandler
 TMP_DIR = '/tmp'
 
 def create_app(config_name='default'):
-    app = Flask(__name__, static_folder='static', static_url_path='/static')
+    app = Flask(__name__, static_folder='public', static_url_path='/static')
     
     # Load configuration
     app.config.from_object(config[config_name])
@@ -54,7 +54,29 @@ def create_app(config_name='default'):
     @app.route('/static/<path:filename>')
     def custom_static(filename):
         try:
-            return send_from_directory(app.static_folder, filename)
+            response = send_from_directory(app.static_folder, filename)
+            
+            # Set proper MIME types for different file types
+            if filename.endswith('.css'):
+                response.headers['Content-Type'] = 'text/css; charset=utf-8'
+            elif filename.endswith('.js'):
+                response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
+            elif filename.endswith(('.jpg', '.jpeg')):
+                response.headers['Content-Type'] = 'image/jpeg'
+            elif filename.endswith('.png'):
+                response.headers['Content-Type'] = 'image/png'
+            elif filename.endswith('.webp'):
+                response.headers['Content-Type'] = 'image/webp'
+            
+            # Set cache headers
+            if filename.endswith(('.css', '.js')):
+                response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+            elif filename.endswith(('.jpg', '.jpeg', '.png', '.webp')):
+                response.headers['Cache-Control'] = 'public, max-age=2592000, immutable'
+            else:
+                response.headers['Cache-Control'] = 'public, max-age=3600'
+            
+            return response
         except FileNotFoundError:
             # Fallback to default image for missing images
             if filename.startswith('images/') and not filename.endswith('default.jpg'):

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test - Horin Library</title>
+    <link rel="stylesheet" href="/static/css/style-v2.css">
+    <style>
+        .test-indicator {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .css-not-loaded {
+            background-color: red !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-indicator" id="cssTest">
+        <h2>CSS Test</h2>
+        <p>Nếu bạn thấy nền xanh lá, CSS đã được load thành công!</p>
+        <p>Nếu bạn thấy nền đỏ, CSS chưa được load.</p>
+    </div>
+    
+    <script>
+        // Check if CSS variables are loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const testElement = document.getElementById('cssTest');
+            const computedStyle = getComputedStyle(testElement);
+            const primaryColor = computedStyle.getPropertyValue('--primary-color');
+            
+            if (!primaryColor || primaryColor.trim() === '') {
+                testElement.classList.add('css-not-loaded');
+                testElement.innerHTML = '<h2>CSS Loading Failed</h2><p>CSS variables not detected. Please check the CSS file path.</p>';
+            } else {
+                console.log('CSS loaded successfully! Primary color:', primaryColor);
+            }
+        });
+    </script>
+</body>
+</html> 

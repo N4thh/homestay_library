@@ -1,3 +1,9 @@
+/*
+ * Horin Library - Main Stylesheet v2.0
+ * Optimized for production deployment on Vercel
+ * Last updated: 2025-01-27
+ */
+
 /* Main color scheme - Màu xanh lá nhạt hơn */
 :root {
     --primary-color: #c3d600;     /* Màu chủ đạo - nút */

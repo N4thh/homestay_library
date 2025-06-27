@@ -406,5 +406,10 @@ def register_routes(app):
             return jsonify({'success': True})
         return jsonify({'error': 'Failed to update images'}), 500
 
+    @app.route('/test-css')
+    def test_css():
+        """Route để test CSS loading"""
+        return send_file('test_css.html', mimetype='text/html')
+
 
 
