@@ -97,25 +97,25 @@ class HomestayJSONManager:
         HomestayJSONManager._cache_time['homestays'] = datetime.now()
 
     def get_filter_options(self):
-        """Get unique filter options from all homestays"""
+        """Get filter options: chỉ trả về thành phố Hồ Chí Minh và các quận thuộc thành phố này"""
         homestays = self.read_homestays()
-        cities = set()
-        districts = set()
+        city = 'Hồ Chí Minh'
+        district_set = set()
+        district_objs = []
         styles = set()
-        
         for homestay in homestays:
             if 'style' in homestay:
                 styles.add(homestay['style'])
             if 'locations' in homestay:
                 for location in homestay['locations']:
-                    if 'city' in location:
-                        cities.add(location['city'])
-                    if 'district' in location:
-                        districts.add(location['district'])
-        
+                    if location.get('city') == city:
+                        district = location.get('district')
+                        if district and district not in district_set:
+                            district_set.add(district)
+                            district_objs.append({'district': district})
         return {
-            'cities': sorted(list(cities)),
-            'districts': sorted(list(districts)),
+            'cities': [{'city': city}],
+            'districts': sorted(district_objs, key=lambda x: x['district']),
             'styles': sorted(list(styles))
         }
 
