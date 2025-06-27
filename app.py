@@ -16,7 +16,7 @@ from logging.handlers import RotatingFileHandler
 TMP_DIR = '/tmp'
 
 def create_app(config_name='default'):
-    app = Flask(__name__, static_folder='public', static_url_path='/static')
+    app = Flask(__name__, static_folder='static', static_url_path='/static')
     
     # Load configuration
     app.config.from_object(config[config_name])
