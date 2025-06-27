@@ -18,7 +18,6 @@ ITEMS_PER_PAGE = 12  # Number of items per page
 def register_routes(app):
     @app.route('/')
     @limiter.limit("30/minute")
-    @cache.cached(timeout=300)  # Cache for 5 minutes
     def index():
         page = request.args.get('page', 1, type=int)
         search_query = request.args.get('search', '').lower()
@@ -329,26 +328,21 @@ def register_routes(app):
     @app.route('/<name>', methods=['GET'])
     def homestay_by_name(name):
         # Skip for index route
-        if name == '':
+        if name == '' or name == '/':
             return redirect(url_for('index'))
-            
         # Get all homestays
         homestay_manager = HomestayJSONManager()
         homestays = homestay_manager.read_homestays()
-        
         # Find homestay by slug
         for homestay in homestays:
-            # Create slug from homestay name
             slug = re.sub(r'[^\w\s-]', '', homestay['name'].lower())
             slug = re.sub(r'[\s-]+', '-', slug)
-            
             if slug == name:
                 return redirect(url_for('homestay_detail', id=homestay['id']))
-                
         # If not a homestay, check if it's a standard route
         if name in ['about', 'contact', 'login', 'logout', 'search', 'booking']:
             return redirect(url_for(name))
-                
+        # Chỉ flash khi thực sự không phải route hợp lệ
         flash('Không tìm thấy trang yêu cầu', 'error')
         return redirect(url_for('index'))
 

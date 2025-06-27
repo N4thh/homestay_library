@@ -132,7 +132,9 @@ class Homestay:
     def normalize_homestay(homestay):
         """Normalize homestay data to handle both old and new formats"""
         normalized = homestay.copy()
-        
+        # Đảm bảo luôn có id hợp lệ
+        if 'id' not in normalized or normalized['id'] is None:
+            normalized['id'] = str(uuid.uuid4())
         # Handle location/locations
         if 'location' in homestay and isinstance(homestay['location'], dict):
             normalized['locations'] = [homestay['location']]
@@ -142,21 +144,17 @@ class Homestay:
                 'district': '',
                 'address': ''
             }]
-            
         # Handle images/image_urls
         if 'images' in homestay and isinstance(homestay['images'], list):
             normalized['image_urls'] = homestay['images']
         elif 'image_urls' not in homestay:
             normalized['image_urls'] = ['/static/images/default.jpg']
-            
         # Handle style format (string or array)
         if 'style' in homestay and isinstance(homestay['style'], list):
             normalized['style'] = ', '.join(homestay['style'])
-            
         # Ensure price is a dict if it looks like a dict in string form
         if 'price' in normalized and isinstance(normalized['price'], str):
             try:
-                # Try to parse string dict to actual dict
                 parsed = ast.literal_eval(normalized['price'])
                 if isinstance(parsed, dict):
                     normalized['price'] = parsed
